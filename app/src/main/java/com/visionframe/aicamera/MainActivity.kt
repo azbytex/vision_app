@@ -3,6 +3,9 @@ package com.visionframe.aicamera
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -42,6 +45,16 @@ class MainActivity : AppCompatActivity() {
         setupListeners()
         observeViewModel()
         checkAndRequestPermissions()
+
+        // Preload Splash Screen auto-dismiss after 1.5 seconds
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.splashOverlay.animate()
+                .alpha(0f)
+                .setDuration(400)
+                .withEndAction {
+                    binding.splashOverlay.visibility = View.GONE
+                }
+        }, 1500)
     }
 
     private fun checkAndRequestPermissions() {

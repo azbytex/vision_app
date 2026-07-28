@@ -26,6 +26,58 @@
         app:layout_constraintStart_toStartOf="@id/viewFinder"
         app:layout_constraintTop_toTopOf="@id/viewFinder" />
 
+    <!-- Preload / Splash Logo Screen Overlay -->
+    <RelativeLayout
+        android:id="@+id/splashOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0B0F19"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="20dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <!-- Logo Image -->
+            <ImageView
+                android:id="@+id/imgSplashLogo"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/logo"
+                android:contentDescription="VisionFrame AI Logo" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="sans-serif-black"
+                android:text="VISIONFRAME AI"
+                android:textColor="#00F2FE"
+                android:textSize="22sp"
+                android:letterSpacing="0.08" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:fontFamily="monospace"
+                android:text="Initializing Camera &amp; AI Engine..."
+                android:textColor="#94A3B8"
+                android:textSize="12sp" />
+
+            <ProgressBar
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="20dp"
+                android:indeterminateTint="#00F2FE" />
+        </LinearLayout>
+    </RelativeLayout>
+
     <!-- Top Header Toolbar -->
     <LinearLayout
         android:id="@+id/topBar"
@@ -36,6 +88,13 @@
         android:orientation="horizontal"
         android:padding="16dp"
         app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/logo"
+            android:contentDescription="Logo Icon" />
 
         <TextView
             android:layout_width="0dp"
