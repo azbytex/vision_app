@@ -15,6 +15,8 @@ enum class CameraMode { PHOTO, VIDEO, PRO }
 data class CameraUiState(
     val framingResult: FramingScoreResult? = null,
     val smoothedRect: RectF? = null,
+    val frameW: Float = 0f,
+    val frameH: Float = 0f,
     val showGrid: Boolean = true,
     val autoCaptureTriggered: Boolean = false,
     val isFrontCamera: Boolean = false,
@@ -52,6 +54,8 @@ class CameraViewModel : ViewModel() {
                 _uiState.value = _uiState.value.copy(
                     framingResult = fallbackResult,
                     smoothedRect = fallbackCrop,
+                    frameW = frameW,
+                    frameH = frameH,
                     aiStatusText = "Buka objek di tengah bingkai..."
                 )
                 return@launch
@@ -89,6 +93,8 @@ class CameraViewModel : ViewModel() {
             _uiState.value = _uiState.value.copy(
                 framingResult = bestCropResult,
                 smoothedRect = smoothedRect,
+                frameW = frameW,
+                frameH = frameH,
                 autoCaptureTriggered = shouldAutoCapture,
                 aiStatusText = statusMsg
             )

@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (result != null && smoothedRect != null) {
                     binding.overlayView.showRuleOfThirds = state.showGrid
-                    binding.overlayView.updateFraming(result, smoothedRect)
+                    binding.overlayView.updateFraming(result, smoothedRect, state.frameW, state.frameH)
                 }
 
                 // AI status pill text & animation
@@ -102,6 +102,13 @@ class MainActivity : AppCompatActivity() {
                 if (state.autoCaptureTriggered) {
                     triggerShutterBlink()
                     viewModel.resetAutoCaptureTrigger()
+                }
+
+                // Flash state
+                if (state.flashEnabled) {
+                    binding.btnFlash.setColorFilter(ContextCompat.getColor(this@MainActivity, android.R.color.holo_orange_light))
+                } else {
+                    binding.btnFlash.setColorFilter(ContextCompat.getColor(this@MainActivity, android.R.color.white))
                 }
 
                 // Mode update
@@ -137,14 +144,16 @@ class MainActivity : AppCompatActivity() {
         binding.tabPro.setOnClickListener { viewModel.setCameraMode(CameraMode.PRO) }
 
         // Zoom Click Handlers
-        binding.zoom05x.setOnClickListener { setZoomSelected("0.5x", binding.zoom05x) }
-        binding.zoom1x.setOnClickListener { setZoomSelected("1x", binding.zoom1x) }
-        binding.zoom2x.setOnClickListener { setZoomSelected("2x", binding.zoom2x) }
-        binding.zoom4x.setOnClickListener { setZoomSelected("4x", binding.zoom4x) }
+        binding.zoom05x.setOnClickListener { setZoomSelected("0.5x", 0.5f, binding.zoom05x) }
+        binding.zoom1x.setOnClickListener { setZoomSelected("1x", 1.0f, binding.zoom1x) }
+        binding.zoom2x.setOnClickListener { setZoomSelected("2x", 2.0f, binding.zoom2x) }
+        binding.zoom4x.setOnClickListener { setZoomSelected("4x", 4.0f, binding.zoom4x) }
 
         // Flash Button
         binding.btnFlash.setOnClickListener {
             viewModel.toggleFlash()
+            val newFlash = viewModel.uiState.value.flashEnabled
+            cameraXManager?.setTorch(newFlash)
         }
     }
 
@@ -170,7 +179,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setZoomSelected(zoomText: String, selectedView: View) {
+    private fun setZoomSelected(zoomText: String, zoomRatio: Float, selectedView: View) {
         val views = listOf(binding.zoom05x, binding.zoom1x, binding.zoom2x, binding.zoom4x)
         views.forEach { v ->
             v.setBackgroundResource(0)
@@ -179,6 +188,7 @@ class MainActivity : AppCompatActivity() {
         selectedView.setBackgroundResource(R.drawable.zoom_selected_bg)
         (selectedView as? android.widget.TextView)?.setTextColor(ContextCompat.getColor(this, android.R.color.holo_orange_light))
         viewModel.setZoom(zoomText)
+        cameraXManager?.setZoomRatio(zoomRatio)
     }
 
     private fun updateModeUI(mode: CameraMode) {

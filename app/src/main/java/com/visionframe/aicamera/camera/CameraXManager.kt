@@ -30,6 +30,16 @@ class CameraXManager(
     private val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     private val subjectDetector = SubjectDetector(context)
 
+    private var camera: Camera? = null
+
+    fun setZoomRatio(ratio: Float) {
+        camera?.cameraControl?.setZoomRatio(ratio)
+    }
+
+    fun setTorch(enabled: Boolean) {
+        camera?.cameraControl?.enableTorch(enabled)
+    }
+
     fun startCamera(
         isFrontCamera: Boolean = false,
         onSubjectsDetected: (subjects: List<DetectedObject>, w: Float, h: Float) -> Unit
@@ -71,7 +81,7 @@ class CameraXManager(
 
             try {
                 cameraProvider?.unbindAll()
-                cameraProvider?.bindToLifecycle(
+                camera = cameraProvider?.bindToLifecycle(
                     lifecycleOwner,
                     cameraSelector,
                     preview,

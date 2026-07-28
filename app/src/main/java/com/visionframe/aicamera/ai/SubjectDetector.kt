@@ -133,20 +133,25 @@ class SubjectDetector(private val context: Context) {
 
             if (maxScore < CONF_THRESHOLD) continue
 
-            // Convert YOLO normalized center format to pixel RectF
-            val x1 = ((cx - w / 2f) * imgW).coerceIn(0f, imgW.toFloat())
-            val y1 = ((cy - h / 2f) * imgH).coerceIn(0f, imgH.toFloat())
-            val x2 = ((cx + w / 2f) * imgW).coerceIn(0f, imgW.toFloat())
-            val y2 = ((cy + h / 2f) * imgH).coerceIn(0f, imgH.toFloat())
+            // Convert YOLO output (which can be 0..640 or 0..1) to normalized 0..1 range
+            val normCx = if (cx > 1.5f) cx / INPUT_SIZE.toFloat() else cx
+            val normCy = if (cy > 1.5f) cy / INPUT_SIZE.toFloat() else cy
+            val normW  = if (w > 1.5f)  w  / INPUT_SIZE.toFloat() else w
+            val normH  = if (h > 1.5f)  h  / INPUT_SIZE.toFloat() else h
 
-            if (x2 <= x1 || y2 <= y1) continue
+            val left   = (normCx - normW / 2f).coerceIn(0f, 1f)
+            val top    = (normCy - normH / 2f).coerceIn(0f, 1f)
+            val right  = (normCx + normW / 2f).coerceIn(0f, 1f)
+            val bottom = (normCy + normH / 2f).coerceIn(0f, 1f)
+
+            if (right <= left || bottom <= top) continue
 
             val className = if (maxClass < COCO_CLASSES.size) COCO_CLASSES[maxClass] else "object"
             val priority = CLASS_PRIORITIES[className] ?: 10
 
             detections.add(
                 DetectedObject(
-                    boundingBox = RectF(x1, y1, x2, y2),
+                    boundingBox = RectF(left, top, right, bottom),
                     confidence = maxScore,
                     className = className,
                     trackingId = ++trackingCounter,

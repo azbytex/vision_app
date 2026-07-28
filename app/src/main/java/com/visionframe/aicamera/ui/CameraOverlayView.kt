@@ -77,19 +77,42 @@ class CameraOverlayView @JvmOverloads constructor(
         textAlign = Paint.Align.CENTER
     }
 
-    fun updateFraming(result: FramingScoreResult, targetRect: RectF) {
+    private var cameraFrameW: Float = 0f
+    private var cameraFrameH: Float = 0f
+
+    fun updateFraming(result: FramingScoreResult, targetRect: RectF, frameW: Float = 0f, frameH: Float = 0f) {
         this.currentFraming = result
-        this.trackingRect = targetRect
+        if (frameW > 0f) this.cameraFrameW = frameW
+        if (frameH > 0f) this.cameraFrameH = frameH
+
+        // Map targetRect to View pixel bounds if cameraFrame dimensions are known
+        val viewW = width.toFloat()
+        val viewH = height.toFloat()
+
+        val mappedRect = if (cameraFrameW > 0f && cameraFrameH > 0f && viewW > 0f && viewH > 0f) {
+            val scaleX = viewW / cameraFrameW
+            val scaleY = viewH / cameraFrameH
+            RectF(
+                targetRect.left * scaleX,
+                targetRect.top * scaleY,
+                targetRect.right * scaleX,
+                targetRect.bottom * scaleY
+            )
+        } else {
+            targetRect
+        }
+
+        this.trackingRect = mappedRect
 
         // Initialize or lerp animated rect
         if (animatedRect == null) {
-            animatedRect = RectF(targetRect)
+            animatedRect = RectF(mappedRect)
         } else {
-            val alpha = 0.25f // smooth lerp factor
-            animatedRect!!.left += (targetRect.left - animatedRect!!.left) * alpha
-            animatedRect!!.top += (targetRect.top - animatedRect!!.top) * alpha
-            animatedRect!!.right += (targetRect.right - animatedRect!!.right) * alpha
-            animatedRect!!.bottom += (targetRect.bottom - animatedRect!!.bottom) * alpha
+            val alpha = 0.35f // smooth lerp factor
+            animatedRect!!.left += (mappedRect.left - animatedRect!!.left) * alpha
+            animatedRect!!.top += (mappedRect.top - animatedRect!!.top) * alpha
+            animatedRect!!.right += (mappedRect.right - animatedRect!!.right) * alpha
+            animatedRect!!.bottom += (mappedRect.bottom - animatedRect!!.bottom) * alpha
         }
 
         invalidate()

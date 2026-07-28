@@ -41,8 +41,8 @@ class SmartCropGenerator {
         }
 
         val box = primarySubject.boundingBox
-        val subjectCx = box.centerX()
-        val subjectCy = box.centerY()
+        val subjectCx = (if (box.centerX() <= 1f) box.centerX() * srcW else box.centerX())
+        val subjectCy = (if (box.centerY() <= 1f) box.centerY() * srcH else box.centerY())
 
         // Center crop on subject, with headroom bias for people
         val headroomBias = if (primarySubject.className == "person" ||
