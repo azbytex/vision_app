@@ -20,10 +20,21 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Sanitize gradlew (strip BOM + CRLF, set executable)
+      - name: Sanitize gradlew (dos2unix, strip BOM, remove malformed quoted JVM options, set executable)
         run: |
+          sudo apt-get update -y
+          sudo apt-get install -y dos2unix
+          # Normalize line endings
+          dos2unix gradlew
+          # Remove BOM if present
           sed -i '1s/^\xEF\xBB\xBF//' gradlew
+          # Ensure no stray CR characters remain
           sed -i 's/\r$//' gradlew
+          # Remove literal double-quotes that wrap JVM options like "-Xmx64m"
+          # This replaces occurrences like "\"-Xmx64m\"" -> -Xmx64m
+          sed -i -E 's/"(-X[Mm][^"]*)"/\1/g' gradlew
+          # As a fallback, remove any stray double quotes in the file (only if needed)
+          # sed -i 's/"//g' gradlew
           chmod +x gradlew
 
       - name: Build Debug APK
