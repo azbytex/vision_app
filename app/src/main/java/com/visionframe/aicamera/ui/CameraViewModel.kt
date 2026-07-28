@@ -46,9 +46,6 @@ class CameraViewModel : ViewModel() {
                 val fallbackResult = FramingScoreResult(
                     candidateRect = fallbackCrop,
                     totalScore = 80,
-                    ruleOfThirdsScore = 80f,
-                    headroomScore = 80f,
-                    lookingRoomScore = 80f,
                     statusText = "MENGANALISIS BINGKAI",
                     statusLevel = StatusLevel.YELLOW
                 )
