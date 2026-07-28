@@ -31,6 +31,7 @@ class CameraXManager(
     private val subjectDetector = SubjectDetector(context)
 
     fun startCamera(
+        isFrontCamera: Boolean = false,
         onSubjectsDetected: (subjects: List<DetectedObject>, w: Float, h: Float) -> Unit
     ) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -66,11 +67,13 @@ class CameraXManager(
                     }
                 }
 
+            val cameraSelector = if (isFrontCamera) CameraSelector.DEFAULT_FRONT_CAMERA else CameraSelector.DEFAULT_BACK_CAMERA
+
             try {
                 cameraProvider?.unbindAll()
                 cameraProvider?.bindToLifecycle(
                     lifecycleOwner,
-                    CameraSelector.DEFAULT_BACK_CAMERA,
+                    cameraSelector,
                     preview,
                     imageAnalyzer
                 )

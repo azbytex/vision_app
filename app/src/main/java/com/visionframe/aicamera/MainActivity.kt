@@ -75,7 +75,8 @@ class MainActivity : AppCompatActivity() {
             onFrameAnalyzed = { _, _ -> }
         )
 
-        cameraXManager?.startCamera { subjects, w, h ->
+        val isFront = viewModel.uiState.value.isFrontCamera
+        cameraXManager?.startCamera(isFront) { subjects, w, h ->
             viewModel.processFrame(subjects, w, h)
         }
     }
