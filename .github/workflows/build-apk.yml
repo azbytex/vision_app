@@ -20,7 +20,7 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Fix gradlew (strip BOM + CRLF, set executable)
+      - name: Sanitize gradlew (strip BOM + CRLF, set executable)
         run: |
           sed -i '1s/^\xEF\xBB\xBF//' gradlew
           sed -i 's/\r$//' gradlew
